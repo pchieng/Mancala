@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+    background-color:blanchedalmond;
+    text-align: center;
+
+    
+}
+
+
+#mancalaBoard {
+    margin: 80px auto 0px;
+    display: flex;
+    flex-direction: row;
+    width: 70vw;
+    height: 350px;
+    background-color: burlywood;
+    border: solid;
+    border-color:red;
+}
+
+.goal {
+    width: 10%;
+    height: 85%;
+    margin: auto;
+    border: solid;
+    border-color: darkblue;
+    border-radius: 50px;
+}
+
+#playerHoles {
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+}
+
+#player1Holes, #player2Holes {
+    display: flex;
+    flex-direction: row;
+    flex: auto;
+    justify-content: space-evenly;
+}
+
+.hole {
+    border: solid;
+    border-color: darkblue;
+    border-radius: 50px;
+    width: 10%;
+    height: 70%;
+    margin: auto;
+}
