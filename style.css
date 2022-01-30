@@ -1,14 +1,26 @@
 body {
     margin: 0;
     background-color:blanchedalmond;
-    text-align: center;
+    text-align: center;    
+}
 
+#Title {
+    font-size: 4rem;
+    color: black;
+}
+
+
+#scoreboard {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
     
 }
 
 
+
 #mancalaBoard {
-    margin: 80px auto 0px;
+    margin: 20px auto 0px;
     display: flex;
     flex-direction: row;
     width: 70vw;
@@ -25,6 +37,9 @@ body {
     border: solid;
     border-color: darkblue;
     border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #playerHoles {
@@ -47,4 +62,7 @@ body {
     width: 10%;
     height: 70%;
     margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
