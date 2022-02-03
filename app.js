@@ -37,13 +37,13 @@ const startOver = document.getElementById("startOver");
 const resetButton = document.getElementById("resetButton");
 const homeButton = document.getElementById("homeButton");
 
-const initBoard = [
-  0, 0, 0, 4, 4, 4, 0, /* player 1 */ 0, 5, 4, 0, 0, 1, 0 /* player 2 */
-];
-
 // const initBoard = [
-//   4, 4, 4, 4, 4, 4, 0, /* player 1 */ 4, 4, 4, 4, 4, 4, 0 /* player 2 */
+//   0, 0, 0, 4, 4, 4, 0, /* player 1 */ 0, 5, 4, 0, 0, 1, 0 /* player 2 */
 // ];
+
+const initBoard = [
+  4, 4, 4, 4, 4, 4, 0, /* player 1 */ 4, 4, 4, 4, 4, 4, 0 /* player 2 */
+];
 
 const initialState = {
   board: initBoard, // from above
@@ -51,7 +51,6 @@ const initialState = {
   playerOneName: "",
   playerTwoName: "",
   currentPlayer: 1, // switch to 2 when the player swaps
-  message: "", // message to be displayed in message bar
   replayCondition: false, // False: Player switches turn, True: Player repeats turn
   emptyHoleCondition: false, //False: Ending hole was not empty, True: Ending hole was empty
   winner: 0 //0: Game in progress, 1: Player 1 wins the game, 2: Player 2 wins the game
@@ -126,6 +125,7 @@ function computerPlayer() {
     points: 0,
     index: 0
   }
+  
   for (let i = 7; i <= 12; i++) {
     if (gameState.board[i] === 0) {
       continue;
@@ -147,7 +147,6 @@ function startGame() {
   player1ScoreName.innerText = gameState.playerOneName + ": ";
   player2ScoreName.innerText = gameState.playerTwoName + ": ";
   randomizeTurn();
-  renderState();
   scoreboard.style.display = "flex";
   messageBar.style.display = "block";
   mancalaBoard.style.display = "flex";
@@ -156,6 +155,7 @@ function startGame() {
   if (gameState.numPlayers === 1 && gameState.currentPlayer === 2) {
     computerPlayer();
   }
+  renderState();
 }
 
 
@@ -332,8 +332,7 @@ function declareWinner() {
     gameState.winner = 2;
   } else if (gameState.board[6] === gameState.board[13]) {
     gameState.winner = 3;
-  }
-  else {
+  } else {
     gameState.winner = 0;
   }
 }
@@ -359,7 +358,7 @@ function resetBorders() {
 document.querySelectorAll(".hole").forEach(item => {
   item.addEventListener("click", function (event) {
     let holeID = parseInt(event.target.id.replace("hole", ""));
-    if ((gameState.currentPlayer === 1 && holeID <= 5) || (gameState.numPlayers === 2 && gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12))) {
+    if ((gameState.currentPlayer === 1 && holeID <= 5) || (gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12))) {
       if (gameState.board[holeID] !== 0) {
         let selectedHole = document.getElementById(event.target.id);
         resetBorders();
@@ -377,15 +376,18 @@ document.querySelectorAll(".hole").forEach(item => {
 resetButton.addEventListener("click", function (event) {
   let player1 = gameState.playerOneName;
   let player2 = gameState.playerTwoName;
+  let numPlayers = gameState.numPlayers;
   buildInitialState();
   gameState.playerOneName = player1;
   gameState.playerTwoName = player2;
+  gameState.numPlayers = numPlayers;
   resetBorders();
   startGame();
 })
 
 homeButton.addEventListener("click", function (event) {
   buildInitialState();
+  resetBorders();
   playerSelection.style.display = "flex";
   scoreboard.style.display = "none";
   messageBar.style.display = "none";
