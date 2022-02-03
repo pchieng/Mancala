@@ -113,12 +113,14 @@ body {
 }
 
 .goal {
+    font-size: 1.5rem;
     width: 10%;
     height: 85%;
     margin: auto;
     border: solid;
     border-color: rgb(112, 80, 80);
     border-radius: 50px;
+    border-width: 2.5px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -138,17 +140,26 @@ body {
     justify-content: space-evenly;
 }
 
+.plyr1Hole {
+    align-items: end;
+}
+
+.plyr2Hole {
+    align-items: start;
+}
+
 .hole {
+    font-size: 1.5rem;
     border: solid;
     border-color: rgb(112, 80, 80);
     border-radius: 50px;
+    border-width: 3px;
     background-color: rgb(211, 167, 109);
     width: 10%;
     height: 70%;
     margin: auto;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 

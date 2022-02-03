@@ -38,7 +38,7 @@ const resetButton = document.getElementById("resetButton");
 const homeButton = document.getElementById("homeButton");
 
 // const initBoard = [
-//   0, 0, 0, 4, 4, 4, 0, /* player 1 */ 0, 5, 4, 0, 0, 1, 0 /* player 2 */
+//   4, 4, 4, 4, 4, 4, 0, /* player 1 */ 0, 0, 0, 0, 0, 1, 0 /* player 2 */
 // ];
 
 const initBoard = [
@@ -62,6 +62,8 @@ let gameState;
 
 function buildInitialState() {
   gameState = JSON.parse(JSON.stringify(initialState));
+  player1Name.value="";
+  player2Name.value="";
 }
 
 buildInitialState();
@@ -125,7 +127,6 @@ function computerPlayer() {
     points: 0,
     index: 0
   }
-  
   for (let i = 7; i <= 12; i++) {
     if (gameState.board[i] === 0) {
       continue;
@@ -256,9 +257,10 @@ function steal(endingHoleID) {
     oppHoleID = 12;
     for (let i = 0; i <= 5; i++) {
       if (i === endingHoleID) {
-        gameState.board[6] += gameState.board[oppHoleID];
+        gameState.board[6] += gameState.board[oppHoleID] + 1;
         // Need to enter click prompt here...
         gameState.board[oppHoleID] = 0;
+        gameState.board[i] = 0;
         break;
       } else {
         oppHoleID -= 1;
@@ -268,9 +270,10 @@ function steal(endingHoleID) {
     oppHoleID = 5;
     for (let i = 7; i <= 12; i++) {
       if (i === endingHoleID) {
-        gameState.board[13] += gameState.board[oppHoleID];
+        gameState.board[13] += gameState.board[oppHoleID] + 1;
         // Need to enter click prompt here...
         gameState.board[oppHoleID] = 0;
+        gameState.board[i] = 0;
         break;
       } else {
         oppHoleID -= 1;
@@ -312,12 +315,12 @@ function endGame() {
 
 function endGameTotal(sum1, sum2, endingPlayer) {
   if (endingPlayer === 1) {
-    gameState.board[6] += sum2;
+    gameState.board[13] += sum2;
     for (let i = 7; i < 13; i++) {
       gameState.board[i] = 0;
     }
   } else if (endingPlayer === 2) {
-    gameState.board[13] += sum1;
+    gameState.board[6] += sum1;
     for (let i = 0; i < 6; i++) {
       gameState.board[i] = 0;
     }
@@ -343,7 +346,8 @@ function gameAction(holeID) {
   if (endGame() === 0) {
     stealCondition(endingHole);
     replayCondition(endingHole);
-  } else {
+  } 
+  if (endGame() !== 0) {
     declareWinner();
   }
 }
@@ -372,6 +376,61 @@ document.querySelectorAll(".hole").forEach(item => {
     }
   })
 })
+
+document.querySelectorAll(".plyr1Hole").forEach(item => {
+  item.addEventListener("mouseover", function (event) {
+    let holeID = parseInt(event.target.id.replace("hole", ""));
+    if (gameState.currentPlayer === 1 && holeID <= 5) {
+      if (gameState.board[holeID] !== 0) {
+        let selectedHole = document.getElementById(event.target.id);
+        selectedHole.style.borderColor = "#448D76";
+      }
+    }
+  })
+})
+
+document.querySelectorAll(".plyr1Hole").forEach(item => {
+  item.addEventListener("mouseout", function (event) {
+    let holeID = parseInt(event.target.id.replace("hole", ""));
+    if (gameState.currentPlayer === 1 && holeID <= 5) {
+      if (gameState.board[holeID] !== 0) {
+        let selectedHole = document.getElementById(event.target.id);
+        selectedHole.style.borderColor = "rgb(112, 80, 80)";
+      }
+    }
+  })
+})
+
+
+document.querySelectorAll(".plyr2Hole").forEach(item => {
+  item.addEventListener("mouseover", function (event) {
+    let holeID = parseInt(event.target.id.replace("hole", ""));
+    if (gameState.numPlayers === 2 && gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12)) {
+      if (gameState.board[holeID] !== 0) {
+        let selectedHole = document.getElementById(event.target.id);
+        selectedHole.style.borderColor = "#448D76";
+      }
+    }
+  })
+})
+
+document.querySelectorAll(".plyr2Hole").forEach(item => {
+  item.addEventListener("mouseout", function (event) {
+    let holeID = parseInt(event.target.id.replace("hole", ""));
+    if (gameState.numPlayers === 2 && gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12)) {
+      if (gameState.board[holeID] !== 0) {
+        let selectedHole = document.getElementById(event.target.id);
+        selectedHole.style.borderColor = "rgb(112, 80, 80)";
+      }
+    }
+  })
+})
+
+
+
+
+
+
 
 resetButton.addEventListener("click", function (event) {
   let player1 = gameState.playerOneName;
