@@ -1,21 +1,11 @@
-// const mancalaBoard = document.getElementById("mancalaBoard");
+/**
+ * To-Do Items:
+ * - Delay individual iterations
+ * - Add marbles
+ * 
+ * 
+ */
 
-// const func = function () {
-//   console.log("Board Clicked")
-// }
-
-// mancalaBoard.addEventListener("click", func)
-
-// let currentOperation = () => {};
-
-// mancalaBoard.addEventListener("click", () => {
-//   currentOperation = function (a,b) {
-
-//   }
-// })
-
-
-// setinterval(tick, 1000)
 
 
 const playerSelection = document.getElementById("playerSelection");
@@ -37,9 +27,6 @@ const startOver = document.getElementById("startOver");
 const resetButton = document.getElementById("resetButton");
 const homeButton = document.getElementById("homeButton");
 
-// const initBoard = [
-//   4, 4, 4, 4, 4, 4, 0, /* player 1 */ 0, 0, 0, 0, 0, 1, 0 /* player 2 */
-// ];
 
 const initBoard = [
   4, 4, 4, 4, 4, 4, 0, /* player 1 */ 4, 4, 4, 4, 4, 4, 0 /* player 2 */
@@ -53,17 +40,18 @@ const initialState = {
   currentPlayer: 1, // switch to 2 when the player swaps
   replayCondition: false, // False: Player switches turn, True: Player repeats turn
   emptyHoleCondition: false, //False: Ending hole was not empty, True: Ending hole was empty
+  computersTurn: false, // False: Human player's turn, True: Computer's turn
   winner: 0 //0: Game in progress, 1: Player 1 wins the game, 2: Player 2 wins the game
 };
 
 
 let gameState;
 
-
+// Returns game settings & name entries back to initial state
 function buildInitialState() {
   gameState = JSON.parse(JSON.stringify(initialState));
-  player1Name.value="";
-  player2Name.value="";
+  player1Name.value = "";
+  player2Name.value = "";
 }
 
 buildInitialState();
@@ -88,19 +76,20 @@ multiPlayer.addEventListener("click", function (event) {
 /** ====== Player Name(s) Screen ====== */
 // Enter Player Names
 
-
+// Reveals name entry screen and removes previous player selection buttons
 function nameSetup() {
   playerSelection.style.display = "none";
   nameEntry.style.display = "block";
 }
 
-
+// Back button to return to home screen
 backButton.addEventListener("click", function (event) {
   buildInitialState();
   playerSelection.style.display = "block";
   nameEntry.style.display = "none";
 })
 
+// Starts game with selected player names
 startButton.addEventListener("click", function (event) {
   if (player1Name.value !== "") {
     gameState.playerOneName = player1Name.value;
@@ -120,27 +109,37 @@ startButton.addEventListener("click", function (event) {
 
 /** ====== Game Play Screen ======= */
 
-
+// Computer opponent for single player
 function computerPlayer() {
   let savedGameState = JSON.parse(JSON.stringify(gameState));
   let bestMove = {
     points: 0,
     index: 0
   }
-  for (let i = 7; i <= 12; i++) {
-    if (gameState.board[i] === 0) {
-      continue;
-    } else {
-      gameAction(i);
-      if (gameState.board[13] > bestMove.points) {
-        bestMove.points = gameState.board[13];
-        bestMove.index = i;
+gameState.computersTurn = true;
+// Wait 4 seconds before the computer makes a move
+  setTimeout(function () {
+    // Check each option for the computer's move
+    for (let i = 7; i <= 12; i++) {
+      // Ignore pits without any pips
+      if (gameState.board[i] === 0) {
+        continue;
+      } else {
+        gameAction(i);
+        // Save the pit that will result in the most points
+        // Secondary preference for the furthest pit from the goal
+        if (gameState.board[13] > bestMove.points) {
+          bestMove.points = gameState.board[13];
+          bestMove.index = i;
+        }
       }
+      gameState = JSON.parse(JSON.stringify(savedGameState));
     }
-    gameState = JSON.parse(JSON.stringify(savedGameState));
-  }
-  document.getElementById("hole" + bestMove.index).click();
-
+    gameState.computersTurn = false;
+// Computer makes the best move
+    document.getElementById("hole" + bestMove.index).click();
+    gameState.computersTurn = true;
+  }, 4000)
 }
 
 
@@ -159,12 +158,12 @@ function startGame() {
   renderState();
 }
 
-
+// Randomly chooses which player will start the game
 function randomizeTurn() {
   gameState.currentPlayer = Math.floor(Math.random() * 2 + 1);
 }
 
-
+// Visually updates game board, score, and message bar with updated data
 function renderState() {
   for (let i = 0; i < gameState.board.length; i++) {
     document.getElementById("hole" + i).innerText = gameState.board[i];
@@ -178,6 +177,8 @@ function updateScore() {
   document.getElementById("player1Score").innerText = gameState.board[6];
   document.getElementById("player2Score").innerText = gameState.board[13];
 }
+
+
 
 function updateMessage() {
   if (gameState.winner === 1) {
@@ -201,7 +202,7 @@ function updateMessage() {
   }
 }
 
-
+// Allows pips to travel in a CCW loop and skip the opponent's goal
 function loopHoles(holeID) {
   let newHoleID;
   if (gameState.currentPlayer === 1 && holeID === 12) {
@@ -221,7 +222,7 @@ function moveStones(holeID) {
   let numStones = gameState.board[holeID];
   let currHole = holeID;
   gameState.board[currHole] = 0;
-  // Add one stone to the following holes in a CCW loop.
+  // Add one pip to the following holes in a CCW loop.
   for (let idx = 0; idx < numStones; idx++) {
     currHole = loopHoles(currHole);
     if (gameState.board[currHole] === 0) {
@@ -242,6 +243,7 @@ function switchPlayer() {
   }
 }
 
+// If a player ends their move by placing a pip in their own mancala, player gets to go again.
 function replayCondition(endingHoleID) {
   if ((endingHoleID === 6 && gameState.currentPlayer === 1) || (endingHoleID === 13 && gameState.currentPlayer === 2)) {
     gameState.replayCondition = true;
@@ -251,6 +253,7 @@ function replayCondition(endingHoleID) {
   }
 }
 
+// Capture opponent pips when the player ends in an empty pip on their side
 function steal(endingHoleID) {
   let oppHoleID;
   if (gameState.currentPlayer === 1) {
@@ -258,8 +261,8 @@ function steal(endingHoleID) {
     for (let i = 0; i <= 5; i++) {
       if (i === endingHoleID) {
         gameState.board[6] += gameState.board[oppHoleID] + 1;
-        // Need to enter click prompt here...
         gameState.board[oppHoleID] = 0;
+        document.getElementById("hole" + oppHoleID).style.borderColor = "red";
         gameState.board[i] = 0;
         break;
       } else {
@@ -271,8 +274,8 @@ function steal(endingHoleID) {
     for (let i = 7; i <= 12; i++) {
       if (i === endingHoleID) {
         gameState.board[13] += gameState.board[oppHoleID] + 1;
-        // Need to enter click prompt here...
         gameState.board[oppHoleID] = 0;
+        document.getElementById("hole" + oppHoleID).style.borderColor = "red";
         gameState.board[i] = 0;
         break;
       } else {
@@ -290,8 +293,9 @@ function stealCondition(endingHoleID) {
   } else {
     gameState.emptyHoleCondition = false;
   }
-
 }
+
+
 
 function endGame() {
   let sum1 = 0;
@@ -312,7 +316,7 @@ function endGame() {
   return endingPlayer;
 }
 
-
+// Adds the total number of pips on a players side to their mancala
 function endGameTotal(sum1, sum2, endingPlayer) {
   if (endingPlayer === 1) {
     gameState.board[13] += sum2;
@@ -327,7 +331,7 @@ function endGameTotal(sum1, sum2, endingPlayer) {
   }
 }
 
-
+// Determine which player wins or if it's a draw
 function declareWinner() {
   if (gameState.board[6] > gameState.board[13]) {
     gameState.winner = 1;
@@ -346,7 +350,7 @@ function gameAction(holeID) {
   if (endGame() === 0) {
     stealCondition(endingHole);
     replayCondition(endingHole);
-  } 
+  }
   if (endGame() !== 0) {
     declareWinner();
   }
@@ -359,10 +363,12 @@ function resetBorders() {
   }
 }
 
+
+
 document.querySelectorAll(".hole").forEach(item => {
   item.addEventListener("click", function (event) {
     let holeID = parseInt(event.target.id.replace("hole", ""));
-    if ((gameState.currentPlayer === 1 && holeID <= 5) || (gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12))) {
+    if ((gameState.currentPlayer === 1 && holeID <= 5) || (!gameState.computersTurn && gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12))) {
       if (gameState.board[holeID] !== 0) {
         let selectedHole = document.getElementById(event.target.id);
         resetBorders();
@@ -376,6 +382,7 @@ document.querySelectorAll(".hole").forEach(item => {
     }
   })
 })
+
 
 document.querySelectorAll(".plyr1Hole").forEach(item => {
   item.addEventListener("mouseover", function (event) {
