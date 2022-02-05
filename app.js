@@ -1,8 +1,6 @@
 /**
  * To-Do Items:
- * - Delay individual iterations
- * - Add marbles
- * 
+ * - Add pips
  * 
  */
 
@@ -166,11 +164,45 @@ function randomizeTurn() {
 // Visually updates game board, score, and message bar with updated data
 function renderState() {
   for (let i = 0; i < gameState.board.length; i++) {
-    document.getElementById("hole" + i).innerText = gameState.board[i];
+      document.getElementById("hole" + i).innerText = gameState.board[i];   
   }
   updateScore();
   updateMessage();
 }
+
+function delayedRender(currHole, origHole, loopStatus) {
+if (loopStatus) {
+  setTimeout(function() {
+    document.getElementById("hole" + currHole).innerText = gameState.board[currHole];
+  }, (14 + currHole - origHole) * 280)
+} else {
+  setTimeout(function() {
+    document.getElementById("hole" + currHole).innerText = gameState.board[currHole];
+  }, (currHole - origHole) * 280)
+}
+}
+
+
+
+
+function actionRenderState(holeID) { 
+let origHole = holeID;
+let loopStatus = false;
+  for (let i = holeID; i < gameState.board.length; i++) {
+      delayedRender(i, origHole, loopStatus);
+  }
+  for (let j = 0; j < holeID; j++) {
+    if (gameState.board[j] !== document.getElementById("hole" + j).innerText) {
+      loopStatus = true;
+      delayedRender(j, origHole, loopStatus);
+    }
+  }
+  updateScore();
+  updateMessage();
+}
+
+
+
 
 
 function updateScore() {
@@ -373,7 +405,7 @@ document.querySelectorAll(".hole").forEach(item => {
         let selectedHole = document.getElementById(event.target.id);
         resetBorders();
         gameAction(holeID);
-        renderState();
+        actionRenderState(holeID);
         selectedHole.style.borderColor = "#448D76";
         if (gameState.numPlayers === 1 && gameState.currentPlayer === 2) {
           computerPlayer();
