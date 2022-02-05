@@ -114,18 +114,18 @@ function computerPlayer() {
     points: 0,
     index: 0
   }
-gameState.computersTurn = true;
-// Wait 4 seconds before the computer makes a move
+  gameState.computersTurn = true;
+  // Wait 4 seconds before the computer makes a move
   setTimeout(function () {
     // Check each option for the computer's move
     for (let i = 7; i <= 12; i++) {
-      // Ignore pits without any pips
+      // Ignore holes without any pips
       if (gameState.board[i] === 0) {
         continue;
       } else {
         gameAction(i);
-        // Save the pit that will result in the most points
-        // Secondary preference for the furthest pit from the goal
+        // Save the hole that will result in the most points
+        // Secondary preference for the furthest hole from the goal
         if (gameState.board[13] > bestMove.points) {
           bestMove.points = gameState.board[13];
           bestMove.index = i;
@@ -134,7 +134,7 @@ gameState.computersTurn = true;
       gameState = JSON.parse(JSON.stringify(savedGameState));
     }
     gameState.computersTurn = false;
-// Computer makes the best move
+    // Computer makes the best move
     document.getElementById("hole" + bestMove.index).click();
     gameState.computersTurn = true;
   }, 4000)
@@ -161,38 +161,106 @@ function randomizeTurn() {
   gameState.currentPlayer = Math.floor(Math.random() * 2 + 1);
 }
 
+
+
+function createDiv(text, holeID) {
+  let div = document.createElement("div");
+  div.id = "pip";
+  div.className = "pip" + holeID;
+  div.appendChild(document.createTextNode(text));
+  return div;
+}
+
+
+
+function collectDivs(numPips, holeID) {
+  let divArray = [];
+  if (numPips > 7) {
+    numPips = 7;
+  }
+  for (let i = 0; i < numPips; i++) {
+    divArray.push(createDiv(" ", holeID));
+  }
+  return divArray;
+}
+
+function clearPips(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+  }
+}
+
+
+
+function updatePips(numPips, holeID) {
+  let element = document.getElementById("marble" + holeID)
+  let divArray = collectDivs(numPips, holeID);
+  let docFrag = document.createDocumentFragment();
+  for (let i = 0; i < divArray.length; i++) {
+    docFrag.appendChild(divArray[i]);
+  }
+  if (numPips !== 0 && numPips < 8) {
+    clearPips(element);
+    element.appendChild(docFrag);
+  }
+  if (numPips === 0 && holeID !== 6 && holeID !== 13) {
+    clearPips(element);
+  }
+}
+
+
+
 // Visually updates game board, score, and message bar with updated data
 function renderState() {
   for (let i = 0; i < gameState.board.length; i++) {
-      document.getElementById("hole" + i).innerText = gameState.board[i];   
+    document.getElementById("hole" + i + "Header").innerText = gameState.board[i];
+    if (i !== 6 && i !== 13) {
+      updatePips(gameState.board[i], i);
+    }
   }
   updateScore();
   updateMessage();
 }
 
+
+// Delays visual update to simulate pip motion after player's move
 function delayedRender(currHole, origHole, loopStatus) {
-if (loopStatus) {
-  setTimeout(function() {
-    document.getElementById("hole" + currHole).innerText = gameState.board[currHole];
-  }, (14 + currHole - origHole) * 280)
-} else {
-  setTimeout(function() {
-    document.getElementById("hole" + currHole).innerText = gameState.board[currHole];
-  }, (currHole - origHole) * 280)
+  if (loopStatus) {
+    setTimeout(function () {
+      document.getElementById("hole" + currHole + "Header").innerText = gameState.board[currHole];
+    }, (14 + currHole - origHole) * 280);
+
+    if (currHole !== 6 && currHole !== 13) {
+      setTimeout(function () {
+        updatePips(gameState.board[currHole], currHole);
+      }, (14 + currHole - origHole) * 280);
+    }
+
+  }
+  else {
+    setTimeout(function () {
+      document.getElementById("hole" + currHole + "Header").innerText = gameState.board[currHole];
+    }, (currHole - origHole) * 280);
+
+    if (currHole !== 6 && currHole !== 13) {
+      setTimeout(function () {
+        updatePips(gameState.board[currHole], currHole);
+      }, (currHole - origHole) * 280);
+    }
+  }
 }
-}
 
 
 
-
-function actionRenderState(holeID) { 
-let origHole = holeID;
-let loopStatus = false;
+// Visually updates game board with a delay after player's move
+function actionRenderState(holeID) {
+  let origHole = holeID;
+  let loopStatus = false;
   for (let i = holeID; i < gameState.board.length; i++) {
-      delayedRender(i, origHole, loopStatus);
+    delayedRender(i, origHole, loopStatus);
   }
   for (let j = 0; j < holeID; j++) {
-    if (gameState.board[j] !== document.getElementById("hole" + j).innerText) {
+    if (gameState.board[j] !== document.getElementById("hole" + j + "Header").innerText) {
       loopStatus = true;
       delayedRender(j, origHole, loopStatus);
     }
@@ -204,14 +272,14 @@ let loopStatus = false;
 
 
 
-
+//  Updates players' scores
 function updateScore() {
   document.getElementById("player1Score").innerText = gameState.board[6];
   document.getElementById("player2Score").innerText = gameState.board[13];
 }
 
 
-
+// Updates message bar with game & turn status
 function updateMessage() {
   if (gameState.winner === 1) {
     messageBar.innerText = gameState.playerOneName + " wins!";
@@ -249,14 +317,14 @@ function loopHoles(holeID) {
   return newHoleID;
 }
 
-
+// Move the number of pips in a hole
 function moveStones(holeID) {
   let numStones = gameState.board[holeID];
   let currHole = holeID;
   gameState.board[currHole] = 0;
-  // Add one pip to the following holes in a CCW loop.
   for (let idx = 0; idx < numStones; idx++) {
     currHole = loopHoles(currHole);
+    // Indicate whether the last hole is empty
     if (gameState.board[currHole] === 0) {
       gameState.emptyHoleCondition = true;
     } else {
@@ -267,6 +335,7 @@ function moveStones(holeID) {
   return currHole;
 }
 
+// Switches player turns
 function switchPlayer() {
   if (gameState.currentPlayer === 1) {
     gameState.currentPlayer = 2;
@@ -395,14 +464,39 @@ function resetBorders() {
   }
 }
 
+function convertClassToID(target) {
+  let conversion;
+
+  if (target.id === "pip") {
+    conversion = target.parentNode.id;
+  } else {
+    conversion = target.id;
+  }
+  conversion = conversion.replace("hole", "");
+  conversion = conversion.replace("Header", "");
+  conversion = conversion.replace("marble", "");
+  return parseInt(conversion);
+}
+
+function callParentHoleID(target, holeID) {
+  let selectedHole;
+  if (target.className === "holeHeader" || target.className === "marble") {
+    selectedHole = document.getElementById(target.parentNode.id);
+  } else if (target.id === "pip") {
+    selectedHole = document.getElementById(target.parentNode.parentNode.id);
+  } else {
+    selectedHole = document.getElementById(target.id);
+  }
+  return selectedHole;
+}
 
 
 document.querySelectorAll(".hole").forEach(item => {
   item.addEventListener("click", function (event) {
-    let holeID = parseInt(event.target.id.replace("hole", ""));
+    let holeID = convertClassToID(event.target);
     if ((gameState.currentPlayer === 1 && holeID <= 5) || (!gameState.computersTurn && gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12))) {
       if (gameState.board[holeID] !== 0) {
-        let selectedHole = document.getElementById(event.target.id);
+        let selectedHole = callParentHoleID(event.target);
         resetBorders();
         gameAction(holeID);
         actionRenderState(holeID);
@@ -416,12 +510,18 @@ document.querySelectorAll(".hole").forEach(item => {
 })
 
 
+
+
+
+
+
+
 document.querySelectorAll(".plyr1Hole").forEach(item => {
   item.addEventListener("mouseover", function (event) {
-    let holeID = parseInt(event.target.id.replace("hole", ""));
+    let holeID = convertClassToID(event.target);
     if (gameState.currentPlayer === 1 && holeID <= 5) {
       if (gameState.board[holeID] !== 0) {
-        let selectedHole = document.getElementById(event.target.id);
+        let selectedHole = callParentHoleID(event.target);
         selectedHole.style.borderColor = "#448D76";
       }
     }
@@ -430,10 +530,10 @@ document.querySelectorAll(".plyr1Hole").forEach(item => {
 
 document.querySelectorAll(".plyr1Hole").forEach(item => {
   item.addEventListener("mouseout", function (event) {
-    let holeID = parseInt(event.target.id.replace("hole", ""));
+    let holeID = convertClassToID(event.target);
     if (gameState.currentPlayer === 1 && holeID <= 5) {
       if (gameState.board[holeID] !== 0) {
-        let selectedHole = document.getElementById(event.target.id);
+        let selectedHole = callParentHoleID(event.target);
         selectedHole.style.borderColor = "rgb(112, 80, 80)";
       }
     }
@@ -443,10 +543,10 @@ document.querySelectorAll(".plyr1Hole").forEach(item => {
 
 document.querySelectorAll(".plyr2Hole").forEach(item => {
   item.addEventListener("mouseover", function (event) {
-    let holeID = parseInt(event.target.id.replace("hole", ""));
+    let holeID = convertClassToID(event.target);
     if (gameState.numPlayers === 2 && gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12)) {
       if (gameState.board[holeID] !== 0) {
-        let selectedHole = document.getElementById(event.target.id);
+        let selectedHole = callParentHoleID(event.target);
         selectedHole.style.borderColor = "#448D76";
       }
     }
@@ -455,10 +555,10 @@ document.querySelectorAll(".plyr2Hole").forEach(item => {
 
 document.querySelectorAll(".plyr2Hole").forEach(item => {
   item.addEventListener("mouseout", function (event) {
-    let holeID = parseInt(event.target.id.replace("hole", ""));
+    let holeID = convertClassToID(event.target);
     if (gameState.numPlayers === 2 && gameState.currentPlayer === 2 && (holeID >= 7 && holeID <= 12)) {
       if (gameState.board[holeID] !== 0) {
-        let selectedHole = document.getElementById(event.target.id);
+        let selectedHole = callParentHoleID(event.target);
         selectedHole.style.borderColor = "rgb(112, 80, 80)";
       }
     }

@@ -15,7 +15,8 @@
 
 <body>
     <h1 id="title">Mancala!</h1>
-    <a id="howTo" href="https://www.thesprucecrafts.com/how-to-play-mancala-409424" target="_blank">How to Play Mancala</a>
+    <a id="howTo" href="https://www.thesprucecrafts.com/how-to-play-mancala-409424" target="_blank">How to Play
+        Mancala</a>
     <div id="scoreboard">
         <div id="player1Scoreboard"><span id="player1ScoreName">Player 1: </span><span id="player1Score"></span></div>
         <div id="player2Scoreboard"><span id="player2ScoreName">Player 2: </span><span id="player2Score"></span></div>
@@ -28,40 +29,87 @@
     <div id="nameEntry">
         <div id="nameInstruction">Enter Player Name</div>
         <input type="text" placeholder="Player 1" value="" class="nameInput" id="player1Name">
-        <span id="playerTwoNameInput"><input type="text" placeholder="Player 2" value="" class="nameInput" id="player2Name"></span>
+        <span id="playerTwoNameInput"><input type="text" placeholder="Player 2" value="" class="nameInput"
+                id="player2Name"></span>
         <div>
             <button id="backButton" class="nameButtons">Back</button>
             <button id="startButton" class="nameButtons">Start Game</button>
         </div>
-        
+
     </div>
     <div id="mancalaBoard">
-        <div id="hole13" class="goal"></div>
+
+
+
+        <div id="hole13" class="goal">
+            <h1 id="hole13Header" class="goalHeader"></h1>
+        </div>
+
+
         <div id="playerHoles">
             <div id="player2Holes">
-                <div id="hole12" class="hole plyr2Hole"></div>
-                <div id="hole11" class="hole plyr2Hole"></div>
-                <div id="hole10" class="hole plyr2Hole"></div>
-                <div id="hole9" class="hole plyr2Hole"></div>
-                <div id="hole8" class="hole plyr2Hole"></div>
-                <div id="hole7" class="hole plyr2Hole"></div>
+
+                <div id="hole12" class="hole plyr2Hole">
+                    <h1 id="hole12Header" class="holeHeader"></h1>
+                    <div id="marble12" class="marble"></div>
+                </div>
+                <div id="hole11" class="hole plyr2Hole">
+                    <h1 id="hole11Header" class="holeHeader"></h1>
+                    <div id="marble11" class="marble"></div>
+                </div>
+                <div id="hole10" class="hole plyr2Hole">
+                    <h1 id="hole10Header" class="holeHeader"></h1>
+                    <div id="marble10" class="marble"></div>
+                </div>
+                <div id="hole9" class="hole plyr2Hole">
+                    <h1 id="hole9Header" class="holeHeader"></h1>
+                    <div id="marble9" class="marble"></div>
+                </div>
+                <div id="hole8" class="hole plyr2Hole">
+                    <h1 id="hole8Header" class="holeHeader"></h1>
+                    <div id="marble8" class="marble"></div>
+                </div>
+                <div id="hole7" class="hole plyr2Hole">
+                    <h1 id="hole7Header" class="holeHeader"></h1>
+                    <div id="marble7" class="marble"></div>
+                </div>
             </div>
             <div id="player1Holes">
-                <div id="hole0" class="hole plyr1Hole"></div>
-                <div id="hole1" class="hole plyr1Hole"></div>
-                <div id="hole2" class="hole plyr1Hole"></div>
-                <div id="hole3" class="hole plyr1Hole"></div>
-                <div id="hole4" class="hole plyr1Hole"></div>
-                <div id="hole5" class="hole plyr1Hole"></div>
+                <div id="hole0" class="hole plyr1Hole">
+                    <div id="marble0" class="marble"></div>
+                    <h1 id="hole0Header" class="holeHeader"></h1>
+                </div>
+                <div id="hole1" class="hole plyr1Hole">
+                    <div id="marble1" class="marble"></div>
+                    <h1 id="hole1Header" class="holeHeader"></h1>
+                </div>
+                <div id="hole2" class="hole plyr1Hole">
+                    <div id="marble2" class="marble"></div>
+                    <h1 id="hole2Header" class="holeHeader"></h1>
+                </div>
+                <div id="hole3" class="hole plyr1Hole">
+                    <div id="marble3" class="marble"></div>
+                    <h1 id="hole3Header" class="holeHeader"></h1>
+                </div>
+                <div id="hole4" class="hole plyr1Hole">
+                    <div id="marble4" class="marble"></div>
+                    <h1 id="hole4Header" class="holeHeader"></h1>
+                </div>
+                <div id="hole5" class="hole plyr1Hole">
+                    <div id="marble5" class="marble"></div>
+                    <h1 id="hole5Header" class="holeHeader"></h1>
+                </div>
             </div>
         </div>
-        <div id="hole6" class="goal"></div>
+        <div id="hole6" class="goal">
+            <h1 id="hole6Header" class="goalHeader"></h1>
+        </div>
     </div>
     <div id="startOver">
         <button id="resetButton" class="gameButtons">Reset</button>
         <button id="homeButton" class="gameButtons">Home</button>
     </div>
-    
+
 
 
 </body>

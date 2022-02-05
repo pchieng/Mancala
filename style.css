@@ -138,18 +138,15 @@ body {
     flex-direction: row;
     flex: auto;
     justify-content: space-evenly;
+    height: 50%;
 }
 
-.plyr1Hole {
-    align-items: end;
+.plyr1Hole, .plyr2Hole {
+    align-items: center;
 }
 
-.plyr2Hole {
-    align-items: start;
-}
 
 .hole {
-    font-size: 1.5rem;
     border: solid;
     border-color: rgb(112, 80, 80);
     border-radius: 50px;
@@ -159,7 +156,40 @@ body {
     height: 70%;
     margin: auto;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+}
+
+.holeHeader {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 5% 0;
+
+}
+
+.marble {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 5;
+    height: 70%;
+    width: 85%;
+    justify-content: center;
+    align-items: center;
+}
+
+.playr1Marble {
+    padding-top: 10%;
+}
+
+#pip {
+    height: 7%;
+    width: 80%;
+    background-color: #448D76;
+    border: solid;
+    border-width: 2px;
+    border-color: gray;
+    border-radius: 10px;
+    box-shadow: 1px 1px 6px 1px#093426;
 }
 
 
