@@ -1,11 +1,3 @@
-/**
- * To-Do Items:
- * - Add pips
- * 
- */
-
-
-
 const playerSelection = document.getElementById("playerSelection");
 const singlePlayer = document.getElementById("singlePlayer");
 const multiPlayer = document.getElementById("multiPlayer");
@@ -141,6 +133,8 @@ function computerPlayer() {
 }
 
 
+
+// Reset game screen and randomize turn for a new game 
 function startGame() {
   player1ScoreName.innerText = gameState.playerOneName + ": ";
   player2ScoreName.innerText = gameState.playerTwoName + ": ";
@@ -162,7 +156,7 @@ function randomizeTurn() {
 }
 
 
-
+// Create a pip
 function createDiv(text, holeID) {
   let div = document.createElement("div");
   div.id = "pip";
@@ -171,8 +165,8 @@ function createDiv(text, holeID) {
   return div;
 }
 
-
-
+// Stack of pips stored in an array to be added in each hole
+// Max of 7 pips will be displayed per hole
 function collectDivs(numPips, holeID) {
   let divArray = [];
   if (numPips > 7) {
@@ -184,6 +178,7 @@ function collectDivs(numPips, holeID) {
   return divArray;
 }
 
+// Removes all pips from a hole
 function clearPips(parent) {
   while (parent.firstChild) {
     parent.removeChild(parent.firstChild);
@@ -191,7 +186,7 @@ function clearPips(parent) {
 }
 
 
-
+// Update the number of pips displayed according to the actual game state
 function updatePips(numPips, holeID) {
   let element = document.getElementById("marble" + holeID)
   let divArray = collectDivs(numPips, holeID);
@@ -223,25 +218,24 @@ function renderState() {
 }
 
 
-// Delays visual update to simulate pip motion after player's move
+// Delays the visual update to simulate pip motion after each player's move
 function delayedRender(currHole, origHole, loopStatus) {
   if (loopStatus) {
     setTimeout(function () {
       document.getElementById("hole" + currHole + "Header").innerText = gameState.board[currHole];
     }, (14 + currHole - origHole) * 280);
-
+    // Update pips except for the mancalas
     if (currHole !== 6 && currHole !== 13) {
       setTimeout(function () {
         updatePips(gameState.board[currHole], currHole);
       }, (14 + currHole - origHole) * 280);
     }
-
   }
   else {
     setTimeout(function () {
       document.getElementById("hole" + currHole + "Header").innerText = gameState.board[currHole];
     }, (currHole - origHole) * 280);
-
+    // Update pips except for the mancalas
     if (currHole !== 6 && currHole !== 13) {
       setTimeout(function () {
         updatePips(gameState.board[currHole], currHole);
@@ -386,7 +380,7 @@ function steal(endingHoleID) {
   }
 }
 
-
+// Indicates whether a player ends on an empty hole on their own side, allowing for pips to be stolen from the opposite hole
 function stealCondition(endingHoleID) {
   if ((gameState.currentPlayer === 1 && endingHoleID <= 5 && gameState.emptyHoleCondition) ||
     (gameState.currentPlayer === 2 && (endingHoleID >= 7 && endingHoleID <= 12) && gameState.emptyHoleCondition)) {
@@ -397,7 +391,7 @@ function stealCondition(endingHoleID) {
 }
 
 
-
+// Adds the total number of pips on each player's side and adds this to each player's Mancala at the end of the game
 function endGame() {
   let sum1 = 0;
   let sum2 = 0;
@@ -445,7 +439,7 @@ function declareWinner() {
   }
 }
 
-
+// Actions taken when a player selects a hole on their turn
 function gameAction(holeID) {
   endingHole = moveStones(holeID);
   if (endGame() === 0) {
@@ -457,6 +451,7 @@ function gameAction(holeID) {
   }
 }
 
+// Resets all hole border colors
 function resetBorders() {
   let hole = document.getElementsByClassName("hole");
   for (let i = 0; i < hole.length; i++) {
@@ -464,9 +459,10 @@ function resetBorders() {
   }
 }
 
+
+// This function returns the hole index of any element targeted within that hole
 function convertClassToID(target) {
   let conversion;
-
   if (target.id === "pip") {
     conversion = target.parentNode.id;
   } else {
@@ -478,7 +474,8 @@ function convertClassToID(target) {
   return parseInt(conversion);
 }
 
-function callParentHoleID(target, holeID) {
+// This function returns the parent hole element when any of its children are targeted
+function callParentHoleID(target) {
   let selectedHole;
   if (target.className === "holeHeader" || target.className === "marble") {
     selectedHole = document.getElementById(target.parentNode.id);
@@ -491,6 +488,11 @@ function callParentHoleID(target, holeID) {
 }
 
 
+
+//** ====== Event Listeners ====== */
+
+
+// Actions performed when a hole is clicked
 document.querySelectorAll(".hole").forEach(item => {
   item.addEventListener("click", function (event) {
     let holeID = convertClassToID(event.target);
@@ -510,12 +512,7 @@ document.querySelectorAll(".hole").forEach(item => {
 })
 
 
-
-
-
-
-
-
+// Border color changes for player 1
 document.querySelectorAll(".plyr1Hole").forEach(item => {
   item.addEventListener("mouseover", function (event) {
     let holeID = convertClassToID(event.target);
@@ -528,6 +525,7 @@ document.querySelectorAll(".plyr1Hole").forEach(item => {
   })
 })
 
+// Border color changes for player 1
 document.querySelectorAll(".plyr1Hole").forEach(item => {
   item.addEventListener("mouseout", function (event) {
     let holeID = convertClassToID(event.target);
@@ -541,6 +539,7 @@ document.querySelectorAll(".plyr1Hole").forEach(item => {
 })
 
 
+// Border color changes for player 2
 document.querySelectorAll(".plyr2Hole").forEach(item => {
   item.addEventListener("mouseover", function (event) {
     let holeID = convertClassToID(event.target);
@@ -553,6 +552,7 @@ document.querySelectorAll(".plyr2Hole").forEach(item => {
   })
 })
 
+// Border color changes for player 2
 document.querySelectorAll(".plyr2Hole").forEach(item => {
   item.addEventListener("mouseout", function (event) {
     let holeID = convertClassToID(event.target);
@@ -567,10 +567,7 @@ document.querySelectorAll(".plyr2Hole").forEach(item => {
 
 
 
-
-
-
-
+// Reset button to start a new game with the existing player(s)
 resetButton.addEventListener("click", function (event) {
   let player1 = gameState.playerOneName;
   let player2 = gameState.playerTwoName;
@@ -583,6 +580,7 @@ resetButton.addEventListener("click", function (event) {
   startGame();
 })
 
+// Returns to Home Page Screen to start a new game with new players
 homeButton.addEventListener("click", function (event) {
   buildInitialState();
   resetBorders();
